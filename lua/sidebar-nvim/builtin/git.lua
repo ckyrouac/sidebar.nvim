@@ -165,6 +165,15 @@ local function async_update(_)
     async_cmd("Untracked", "git", { "status", "--porcelain" }, parse_git_status)
 end
 
+local function open_file(line)
+    local location = loclist:get_location_at(line)
+    if location == nil then
+        return
+    end
+    vim.cmd("wincmd p")
+    vim.cmd("e " .. location.filepath)
+end
+
 local async_update_debounced = Debouncer:new(async_update, 1000)
 
 return {
@@ -214,14 +223,8 @@ return {
         },
     },
     bindings = {
-        ["e"] = function(line)
-            local location = loclist:get_location_at(line)
-            if location == nil then
-                return
-            end
-            vim.cmd("wincmd p")
-            vim.cmd("e " .. location.filepath)
-        end,
+        ["<2-LeftMouse>"] = open_file,
+        ["o"] = open_file,
         -- stage files
         ["s"] = function(line)
             local location = loclist:get_location_at(line)
